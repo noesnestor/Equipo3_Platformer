@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    public int saludEnemigo;
+    [SerializeField] int saludEnemigo;
 
     // Start is called before the first frame update
     void Start()
@@ -22,7 +22,8 @@ public class Enemy : MonoBehaviour
     {
         if (other.gameObject.tag == "Bullet") 
         {
-            saludEnemigo -= Bullet.damageEnemy;
+            Bullet bullet = other.GetComponent<Bullet>();
+            saludEnemigo -= bullet.damageEnemy;
             if (saludEnemigo <= 0)
             {
                 Destroy(gameObject);

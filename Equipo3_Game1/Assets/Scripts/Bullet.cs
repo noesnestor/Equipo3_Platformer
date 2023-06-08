@@ -7,14 +7,12 @@ public class Bullet : MonoBehaviour
     private Rigidbody2D Rd;
     public float Speed;
 
-    public static int damageEnemy;
-    public static int damageObstacle;
+    public  int damageEnemy;
+    public  int damageObstacle;
     // Start is called before the first frame update
     void Start()
     {
         Rd = GetComponent<Rigidbody2D>();
-        damageEnemy = 25;
-        damageObstacle = 50;
     }
 
     // Update is called once per frame

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Obstacle : MonoBehaviour
 {
-    public int vidaObstaculo;
+    [SerializeField] int vidaObstaculo;
 
     // Start is called before the first frame update
     void Start()
@@ -22,7 +22,8 @@ public class Obstacle : MonoBehaviour
     {
         if (other.gameObject.tag == "Bullet") 
         {
-            vidaObstaculo -= Bullet.damageObstacle;
+            Bullet bullet = other.GetComponent<Bullet>();
+            vidaObstaculo -= bullet.damageObstacle;
             if (vidaObstaculo <= 0)
             {
                 Destroy(gameObject);
