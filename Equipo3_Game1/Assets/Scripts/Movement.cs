@@ -23,15 +23,19 @@ public class Movement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
+        //Izquierda
         if(Input.GetKey(KeyCode.A)){
             personaje.velocity = new Vector2(-1f*velocidad,personaje.velocity.y);
             facingRight = false;
+            transform.eulerAngles = new Vector3(0,180,0); //Invierte la posicion del personaje y del FirePoint
         }
         
-
+        // Derecha
         else if(Input.GetKey(KeyCode.D)){
            personaje.velocity = new Vector2(1f*velocidad,personaje.velocity.y); 
            facingRight = true;
+           transform.eulerAngles = new Vector3(0,0,0); //Invierte la posicion del personaje y del FirePoint
         }
 
         //Jump
