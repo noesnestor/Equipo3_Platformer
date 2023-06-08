@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    [SerializeField] int saludEnemigo;
+    [SerializeField] int saludEnemigo; // Salud del enemigo
 
     // Start is called before the first frame update
     void Start()
@@ -18,6 +18,10 @@ public class Enemy : MonoBehaviour
         
     }
 
+    /// <summary>
+    /// Metodo Collider2D de la clase Enemy que le quita vida al enemigo, si coliciona cuntra una bala
+    /// </summary>
+    /// <param name="other"></param>
     void OnTriggerEnter2D(Collider2D other) 
     {
         if (other.gameObject.tag == "Bullet") 
