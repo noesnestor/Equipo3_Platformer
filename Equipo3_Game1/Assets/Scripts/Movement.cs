@@ -4,50 +4,103 @@ using UnityEngine;
 
 public class Movement : MonoBehaviour
 {
+    private BoxCollider2D boxCollider;
+    private Rigidbody2D personaje;
+    [SerializeField] LayerMask suelo;
+    private enum State {
+        Normal,
+        Sliding
+    }
+    private State state;
+    private Vector2 ultimoMoveDirection;
+    private Vector2 moveDirection;
     [SerializeField] float velocidad;
     [SerializeField] float fuerzaSalto;
-    [SerializeField] LayerMask suelo;
     [SerializeField] float velocidadSlide;
-    private bool facingRight;
-    private Rigidbody2D personaje;
-
-    private BoxCollider2D boxCollider;
-    // Start is called before the first frame update
+    private Vector2 slideDirection;
+    private Vector2 aimDirection;
+    private bool dashUsado;
+    [SerializeField] float distanciaDash;
+    [SerializeField] float cooldownDash;
+    private float baseGravity;
     void Start()
     {
         personaje = GetComponent<Rigidbody2D>();
         boxCollider = GetComponent<BoxCollider2D>();
-        facingRight = true;
+        dashUsado = false;
+        state = State.Normal;
+        baseGravity = personaje.gravityScale;
+    }
+     void Update() {
+        switch (state){
+            case State.Normal:
+                float inputX = 0f;
+                float inputY = 0f;
+
+                if(Input.GetKey(KeyCode.W))
+                    inputY = +1f;
+                else if(Input.GetKey(KeyCode.S))
+                    inputY = -1f;
+                else if(Input.GetKey(KeyCode.A))
+                    inputX = -1f;
+                else if(Input.GetKey(KeyCode.D))
+                    inputX = +1f;
+
+            moveDirection = new Vector2(inputX,0f).normalized;
+            aimDirection = new Vector2(inputX,inputY).normalized;
+            if(inputX !=0){
+                //en Movimiento
+                ultimoMoveDirection = new Vector2(inputX,0f);
+            }
+
+            //Slide
+            if(Input.GetKeyDown(KeyCode.LeftControl) && estaEnElSuelo()){
+                velocidadSlide = 20f;
+                slideDirection = ultimoMoveDirection;
+                state = State.Sliding;
+            }
+
+            //Jump
+            if(Input.GetKeyDown(KeyCode.Space) && estaEnElSuelo()){
+                moveDirection.y = 1f;
+            }
+
+            break;
+            case State.Sliding:
+                float reducirVelocidadSlide = 10f;
+                velocidadSlide -= reducirVelocidadSlide * Time.deltaTime;
+
+                float minimaVelocidadSlide = 12f;
+                if (velocidadSlide < minimaVelocidadSlide){
+                    state = State.Normal;
+                }
+                break;
+        }
+        
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        if(Input.GetKey(KeyCode.A)){
-            personaje.velocity = new Vector2(-1f*velocidad,personaje.velocity.y);
-            facingRight = false;
+        switch(state){
+            case State.Normal:
+                personaje.velocity = moveDirection*velocidad;
+
+                if(moveDirection.y == 1f){
+                    personaje.AddForce(Vector2.up*fuerzaSalto,ForceMode2D.Impulse);
+                }
+
+                if(dashUsado){
+                    personaje.transform.position = new Vector2();
+                    dashUsado = false;
+                }
+                break;
+            case State.Sliding:
+                personaje.velocity = slideDirection * velocidadSlide;
+                break;
         }
+       
         
-
-        else if(Input.GetKey(KeyCode.D)){
-           personaje.velocity = new Vector2(1f*velocidad,personaje.velocity.y); 
-           facingRight = true;
-        }
-
-        //Jump
-        if(Input.GetKeyDown(KeyCode.Space) && estaEnElSuelo()){
-            personaje.AddForce(Vector2.up*fuerzaSalto,ForceMode2D.Impulse);
-        }
-
-        //Slide
-        if(Input.GetKeyDown(KeyCode.LeftControl) && estaEnElSuelo()){
-            if(facingRight){
-                personaje.AddForce(Vector2.right*velocidadSlide,ForceMode2D.Impulse);
-            }
-            else if (!facingRight){
-                personaje.AddForce(Vector2.left*velocidadSlide,ForceMode2D.Impulse);
-            }
-        }
     }
 
     private bool estaEnElSuelo(){
